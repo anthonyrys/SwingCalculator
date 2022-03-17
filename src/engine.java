@@ -1,7 +1,6 @@
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
 import javax.swing.*;
 
+import java.awt.event.*;
 import java.awt.Font;
 import java.awt.Color;
 
@@ -11,21 +10,21 @@ public class engine
   {
     private JFrame f_;
 
-    private JLabel initlabel(String name, int x, int y, int w, int h)
+    private JLabel initlabel(String name, int[] dmns)
     {
       JLabel label = new JLabel(name, SwingConstants.RIGHT);
       label.setFont(new Font(this.label_font, Font.PLAIN, this.label_size));
-      label.setBounds(x, y, w, h);
+      label.setBounds(dmns[0], dmns[1], dmns[2], dmns[3]);
       label.setForeground(Color.white);
 
       return (label);
     }
     
-    private JButton initbutton(String name, int x, int y, int w, int h, int style)
+    private JButton initbutton(String name, int[] dmns, int style, JLabel frame, compute comp)
     {
       JButton button = new JButton(name);  
       button.setFont(new Font(this.button_font, Font.PLAIN, this.button_size));
-      button.setBounds(x, y, w, h);
+      button.setBounds(dmns[0], dmns[1], dmns[2], dmns[3]);
       button.setFocusPainted(false);
 
       switch (style)
@@ -44,7 +43,23 @@ public class engine
             break;
       }
 
+      button.addActionListener(new ActionListener()
+      {
+        @Override
+        public void actionPerformed(ActionEvent e) 
+        {
+          comp.addc(name);
+          updateframe(frame, comp);
+        }
+      });
+
       return (button);
+    }
+
+    private void updateframe(JLabel frame, compute comp)
+    {
+      if ((comp.gettotal() % 1 == 0)) frame.setText(String.valueOf((int)comp.gettotal()));
+      else frame.setText(String.valueOf(comp.gettotal()));
     }
     
     frame(String t)
@@ -55,6 +70,7 @@ public class engine
       switch(t)
       {
         case "calculator":
+          compute comp = new compute();
           String[] labels = 
           {
             "AC#1", "!#1", "^#1", "/#2", 
@@ -66,8 +82,10 @@ public class engine
           
           f_.setSize(300, 430);
           f_.getContentPane().setBackground(Color.black);
-          
-          f_.add(this.initlabel("null", 0, 0, (f_.getWidth() - 30), 100));
+
+          int[] l_dmns = {0, 0, (f_.getWidth() - 30), 100};
+          JLabel frame = this.initlabel("null", l_dmns);
+          f_.add(frame);
           
           int gx = 0, gy = -1;
           for (int i = 0; i < labels.length; i++)
@@ -82,32 +100,27 @@ public class engine
             {
               istr = labels[i].substring(0, labels[i].indexOf('#'));
               isty = Integer.parseInt(labels[i].substring((labels[i].indexOf('#') + 1)));
-            }
-
-            catch(Exception e)
-            {  
-            }
+            } catch(Exception e) {}
             
             try
             {
               if (labels[i + 1].equals(" ")) 
               {
-                f_.add(this.initbutton(istr, ((gx * 75)), (100 + ((gy * 60))), 150, 60, isty)); 
+                int[] b_dmns = {(gx * 75), (100 + (gy * 60)), 150, 60};
+                f_.add(this.initbutton(istr, b_dmns, isty, frame, comp)); 
                 gx += 2; 
                 i += 1; 
                 continue;
               }  
-            }
-              
-            catch(Exception e) 
-            {
-            }
-            
-            f_.add(this.initbutton(istr, ((gx * 75)), (100 + ((gy * 60))), 75, 60, isty)); 
+            } catch(Exception e) {}
+
+            int[] b_dmns = {(gx * 75), (100 + (gy * 60)), 75, 60};
+            f_.add(this.initbutton(istr, b_dmns, isty, frame, comp)); 
             gx += 1;
           }
                  
           f_.setVisible(true);
+          updateframe(frame, comp);
           break;
       }
     } 
@@ -123,8 +136,28 @@ public class engine
     
   class compute
   {
-  }
+    private double total;
+    private String hashstring;
+
+    compute() 
+    {
+      this.total = 0;
+    }
+
+    private void calculate()
+    {
+    }
     
+    void addc(String n)
+    {
+    }
+
+    double gettotal()
+    {
+      return (this.total);
+    }
+  }
+  
   class input implements KeyListener
   {
     @Override
