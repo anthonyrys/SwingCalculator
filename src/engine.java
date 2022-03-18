@@ -4,6 +4,8 @@ import java.awt.event.*;
 import java.awt.Font;
 import java.awt.Color;
 
+import java.lang.Math;
+
 public class engine
 {
   class frame
@@ -73,11 +75,11 @@ public class engine
           compute comp = new compute();
           String[] labels = 
           {
-            "AC#1", "!#1", "^#1", "/#2", 
+            "AC#1", " ", "^#1", "/#2", 
             "7#3", "8#3", "9#3", "*#2",
             "4#3", "5#3", "6#3", "-#2",
             "1#3", "2#3", "3#3", "+#2",
-            "0#3", " ", ".#3", "=#2"
+            "0#3", " ", ".#3", "!#2"
           };
           
           f_.setSize(300, 430);
@@ -138,18 +140,108 @@ public class engine
   {
     private double total;
     private String hashstring;
+    private char[] operators = 
+    {
+      '^', '/', '*', '-', '+', '!'
+    };
 
     compute() 
     {
+      this.hashstring = "0";
       this.total = 0;
+    }
+
+    private boolean runop(String s)
+    {
+      for (char c : s.toCharArray())
+      {
+        if (new String(operators).contains(Character.toString(c))) return true;
+      }
+      return false;
     }
 
     private void calculate()
     {
+      String hs_prio = this.hashstring;
+      System.out.println(runop(hs_prio));
+      
+      if (runop(hs_prio))
+      {
+        if (new String(operators).indexOf(hs_prio.substring(hs_prio.length() - 1)) != -1)
+        {
+          return;
+        }
+
+        char op = ' ';
+        for (char c : operators)
+        {
+          if (hs_prio.contains(Character.toString(c))) op = c;
+        }
+        
+        double a, b;
+        a = Double.parseDouble(hs_prio.substring(0, hs_prio.indexOf(Character.toString(op))));
+        b = Double.parseDouble(hs_prio.substring(hs_prio.indexOf(Character.toString(op)) + 1));
+
+        switch(op)
+        {
+          case '^':
+            hs_prio = String.valueOf(Math.pow(a, b));
+            break;
+
+          case '/':
+            hs_prio = String.valueOf(a / b);
+            break;
+
+          case '*':
+            hs_prio = String.valueOf(a * b);
+            break;
+
+          case '-':
+            hs_prio = String.valueOf(a - b);
+            break;
+
+          case '+':
+            hs_prio = String.valueOf(a + b);
+            break;
+
+          case '!':
+            hs_prio = String.valueOf(a + b);
+            break;
+        }
+        
+        total = Double.parseDouble(hs_prio);
+        this.hashstring = hs_prio;
+      }
+      else
+      {       
+        total = Double.parseDouble(hs_prio);
+        this.hashstring = hs_prio;
+      }
     }
     
     void addc(String n)
     {
+      if (n.equals(".") && this.hashstring.indexOf('.') != -1) return;
+      
+      boolean veri_0 = (new String(operators).indexOf(hashstring.substring(hashstring.length() - 1)) == -1);
+      
+      if (!veri_0 && (runop(n)))
+      {
+        this.hashstring = this.hashstring.substring(0, (this.hashstring.length() - 1));
+        this.hashstring += n;
+      }
+      else if (n.equals("AC"))
+      {
+        this.hashstring = "0";
+        this.total = 0;
+      }
+      else
+      {
+        this.hashstring += n;
+        calculate();
+      }
+      
+      System.out.println(this.hashstring);
     }
 
     double gettotal()
