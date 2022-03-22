@@ -74,7 +74,7 @@ public class engine
           compute comp = new compute();
           String[] labels = 
           {
-            "AC#1", "!#1", "^#1", "/#2", 
+            "AC#1", "√#1", "^#1", "/#2", 
             "7#3", "8#3", "9#3", "*#2",
             "4#3", "5#3", "6#3", "-#2",
             "1#3", "2#3", "3#3", "+#2",
@@ -143,7 +143,7 @@ public class engine
     private char[] operators = 
     {
       '^', '/', '*', '-', '+'
-    }, special = {'!', '='};
+    }, special = {'√', '='};
 
     compute() 
     {
@@ -187,6 +187,61 @@ public class engine
     
     void addc(String n)
     {
+      if (n.equals("√"))
+      {
+        switch (stg)
+        {
+          case 0:
+            if (prim.equals("")) return;
+            try
+            {
+              Double.parseDouble(prim);
+              prim = String.valueOf(Math.sqrt(Double.parseDouble(prim)));
+            }
+            catch(Exception e)
+            {
+              prim += "0";
+              prim = String.valueOf(Math.sqrt(Double.parseDouble(prim)));
+            }
+            setdisp(prim);
+            return;
+
+          case 1:
+            if (prim.equals("")) return;
+            try
+            {
+              Double.parseDouble(prim);
+              prim = String.valueOf(Math.sqrt(Double.parseDouble(prim)));
+            }
+            catch(Exception e)
+            {
+              prim += "0";
+              prim = String.valueOf(Math.sqrt(Double.parseDouble(prim)));
+            }
+            setdisp(prim);
+            return;
+
+          case 2:
+            try
+            {
+              Double.parseDouble(seco);
+              seco = String.valueOf(Math.sqrt(Double.parseDouble(seco)));
+            }
+            catch(Exception e)
+            {
+              seco += "0";
+              seco = String.valueOf(Math.sqrt(Double.parseDouble(seco)));
+            }
+            setdisp(prim);
+            return;
+            
+          case 3:
+            total = Math.sqrt(total);
+            setdisp(String.valueOf(total));
+            return;
+        }
+      }
+      
       if (n.equals("AC")) 
       {
         this.total = 0;
@@ -212,6 +267,7 @@ public class engine
         }
         else if (!String.valueOf(operators).contains(n) && stg == 1)
         {
+          if (String.valueOf(special).contains(n)) return;
           stg += 1;
         }
         else if (stg == 3)
@@ -263,8 +319,7 @@ public class engine
         
         switch (stg)
         {
-          case 0:
-            if (n.equals("!")) return;
+          case 0:          
             if (n.equals(".") && prim.contains(".")) return;
             this.prim += n;
             setdisp(prim);
@@ -292,9 +347,7 @@ public class engine
               stg = 2;
               
               return;
-            }
-            
-            if (n.equals("!")) return;
+            }          
             if (n.equals(".") && seco.contains(".")) return;
             this.seco += n;
             setdisp(seco);
