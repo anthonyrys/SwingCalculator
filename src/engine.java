@@ -60,8 +60,7 @@ public class engine
 
     private void updateframe(JLabel frame, compute comp)
     {
-      if ((comp.gettotal() % 1 == 0)) frame.setText(String.valueOf((int)comp.gettotal()));
-      else frame.setText(String.valueOf(comp.gettotal()));
+      frame.setText(comp.getdisplay());
     }
     
     frame(String t)
@@ -138,29 +137,175 @@ public class engine
     
   class compute
   {
+    private int stg;
     private double total;
-    private String operator;
+    private String operator = "", prim = "", seco = "", disp = "";
     private char[] operators = 
     {
-      '^', '/', '*', '-', '+', '!', '='
-    };
+      '^', '/', '*', '-', '+'
+    }, special = {'!', '='};
 
     compute() 
     {
       this.total = 0;
+      this.stg = 0;
+    }
+
+    private void setdisp(String dis)
+    {
+      if (((Double.parseDouble(dis)) % 1) == 0) this.disp = String.valueOf((int) (Double.parseDouble(dis))); 
+      else this.disp = dis;
     }
 
     private void calculate()
     {
+      double p, s;
+      p = Double.parseDouble(prim);
+      s = Double.parseDouble(seco);
+
+      switch (operator)
+      {
+        case "^":
+          this.total = Math.pow(p, s);
+          break;
+        case "/":
+          this.total = (p / s);
+          break;
+        case "*":
+          this.total = (p * s);
+          break;
+        case "-":
+          this.total = (p - s);
+          break;
+        case "+":
+          this.total = (p + s);
+          break;
+      }
+
+      setdisp(String.valueOf(this.total));
     }
     
     void addc(String n)
     {
+      if (n.equals("AC")) 
+      {
+        this.total = 0;
+        this.stg = 0;
+        this.prim = "";
+        this.seco = "";
+        this.operator = "";
+        setdisp("0");
+      }
+      else
+      {
+        if (String.valueOf(operators).contains(n) && stg == 0)
+        {
+          try
+          {
+            Double.parseDouble(prim);
+          }
+          catch (Exception e)
+          {   
+            prim += "0";
+          }
+          stg += 1;
+        }
+        else if (!String.valueOf(operators).contains(n) && stg == 1)
+        {
+          stg += 1;
+        }
+        else if (stg == 3)
+        {
+          if (!String.valueOf(operators).contains(n) && !String.valueOf(special).contains(n))
+          {
+            this.total = 0;
+            this.stg = 0;
+            this.prim = n;
+            this.seco = "";
+            this.disp = "";
+            this.operator = "";
+            setdisp(prim);
+            
+            return;
+          }
+          else if (String.valueOf(operators).contains(n))
+          {
+            this.prim = String.valueOf(this.total);
+            this.seco = "";
+            this.operator = String.valueOf(n);
+            stg = 2;
+            
+            return;
+          }
+          else if (n.equals("="))
+          {
+            this.prim = String.valueOf(this.total);
+            calculate();
+            
+            return;
+          }
+        }
+        else if (n.equals("="))
+        {
+          if (this.operator.equals("") || this.seco.equals("")) return;
+          try
+          {
+            Double.parseDouble(seco);
+          }
+          catch (Exception e)
+          {   
+            seco += "0";
+          }
+          calculate();
+          stg += 1;
+          return;
+        }
+        
+        switch (stg)
+        {
+          case 0:
+            if (n.equals("!")) return;
+            if (n.equals(".") && prim.contains(".")) return;
+            this.prim += n;
+            setdisp(prim);
+            break;
+
+          case 1:
+            this.operator = String.valueOf(n);
+            break;
+
+          case 2:
+            if (String.valueOf(operators).contains(n))
+            {
+              try
+              {
+                Double.parseDouble(seco);
+              }
+              catch (Exception e)
+              {   
+                seco += "0";
+              }
+              calculate();
+              this.prim = String.valueOf(this.total);
+              this.seco = "";
+              this.operator = n;
+              stg = 2;
+              
+              return;
+            }
+            
+            if (n.equals("!")) return;
+            if (n.equals(".") && seco.contains(".")) return;
+            this.seco += n;
+            setdisp(seco);
+            break;
+        }
+      }
     }
 
-    double gettotal()
+    String getdisplay()
     {
-      return (this.total);
+      return (this.disp);
     }
   }
   
