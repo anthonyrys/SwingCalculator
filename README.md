@@ -1,4 +1,4 @@
-# java-calculator
+# swing-calculator
 created using java swing
 
 for a school project

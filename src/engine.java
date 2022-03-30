@@ -67,6 +67,7 @@ public class engine
     {
       f_ = new JFrame(t);
       f_.setLayout(null); 
+      f_.setResizable(false);
 
       switch(t)
       {
