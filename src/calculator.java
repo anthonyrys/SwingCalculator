@@ -118,7 +118,7 @@ public class calculator
         }
       }
         
-      if (n.equals("AC")) 
+      if (n.equals("C")) 
       {
         this.total = 0;
         this.stg = 0;
@@ -294,7 +294,7 @@ public class calculator
     compute comp = new compute();
     String[] labels = 
     {
-     "AC#1", "√#1", "^#1", "/#2", 
+     "C#1", "√#1", "^#1", "/#2", 
       "7#3", "8#3", "9#3", "*#2",
       "4#3", "5#3", "6#3", "-#2",
       "1#3", "2#3", "3#3", "+#2",
@@ -331,7 +331,7 @@ public class calculator
       {
         if (labels[i + 1].equals(" ")) 
         {
-          int[] b_dmns = {(gx * 75), (100 + (gy * 60)), 150, 60};
+          int[] b_dmns = {((f_.getWidth() / 7) + (gx * (f_.getWidth() / 3))), (100 + (gy * (f_.getHeight() / 8))), (f_.getWidth() / 3),  (f_.getHeight() / 8)};
           f_.add(this.initbutton(istr, b_dmns, isty, frame, comp)); 
           gx += 2;
           i += 1; 
@@ -339,7 +339,7 @@ public class calculator
         }  
       } catch(Exception e) {}
 
-      int[] b_dmns = {(gx * 75), (100 + (gy * 60)), 75, 60};
+      int[] b_dmns = {((f_.getWidth() / 7) + (gx * (f_.getWidth() / 6))), (100 + (gy * (f_.getHeight() / 8))), (f_.getWidth() / 6), (f_.getHeight() / 8)};
       f_.add(this.initbutton(istr, b_dmns, isty, frame, comp)); 
       gx += 1;
     }
